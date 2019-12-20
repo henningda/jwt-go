@@ -90,6 +90,8 @@ func (c *StandardClaims) VerifyNotBefore(cmp int64, req bool) bool {
 
 // ----- helpers
 
+const leeway = 61 // one second more than auth0.js default leeway
+
 func verifyAud(aud string, cmp string, required bool) bool {
 	if aud == "" {
 		return !required
@@ -105,14 +107,14 @@ func verifyExp(exp int64, now int64, required bool) bool {
 	if exp == 0 {
 		return !required
 	}
-	return now <= exp
+	return now <= exp+leeway
 }
 
 func verifyIat(iat int64, now int64, required bool) bool {
 	if iat == 0 {
 		return !required
 	}
-	return now >= iat-15
+	return now >= iat-leeway
 }
 
 func verifyIss(iss string, cmp string, required bool) bool {
@@ -130,5 +132,5 @@ func verifyNbf(nbf int64, now int64, required bool) bool {
 	if nbf == 0 {
 		return !required
 	}
-	return now >= nbf-15
+	return now >= nbf-leeway
 }
